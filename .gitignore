@@ -1,13 +1,45 @@
-# Python-generated files
+# Python bytecode files
 __pycache__/
-*.py[oc]
-build/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+env/
+.venv/
+.env/
+
+# VS Code settings
+.vscode/
+
+# Dependency directories
+pip-wheel-metadata/
+*.egg-info/
 dist/
-wheels/
-*.egg-info
+build/
 
-# Virtual environments
-.venv
+# Python distribution and packaging files
+*.egg
+*.tar.gz
+*.whl
 
-# environment file
-.env
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# FastAPI specific (if you are using database migrations or similar)
+*.sqlite
+*.db
+
+# Logs
+*.log
+
+# IDE specific files (if applicable)
+.idea/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Ruff formatter
+.ruff_cache

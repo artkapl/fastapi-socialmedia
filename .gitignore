@@ -43,3 +43,6 @@ Thumbs.db
 
 # Ruff formatter
 .ruff_cache
+
+# Environment file
+.env

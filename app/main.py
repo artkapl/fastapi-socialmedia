@@ -68,10 +68,19 @@ async def delete_post(id: int):
     conn.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
+
 @app.put("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def update_post(id: int, post: Post):
-    cur.execute(""" UPDATE posts SET title = %(title)s, content = %(content)s, published = %(published)s, updated_at = %(updated_at)s WHERE id = %(id)s RETURNING * """, 
-                {"title": post.title, "content": post.content, "published": post.published, "updated_at": "NOW()", "id": id})
+    cur.execute(
+        """ UPDATE posts SET title = %(title)s, content = %(content)s, published = %(published)s, updated_at = %(updated_at)s WHERE id = %(id)s RETURNING * """,
+        {
+            "title": post.title,
+            "content": post.content,
+            "published": post.published,
+            "updated_at": "NOW()",
+            "id": id,
+        },
+    )
     updated_post = cur.fetchone()
     if not updated_post:
         raise HTTPException(404, f"Post with ID {id} not found!")

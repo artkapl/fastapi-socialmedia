@@ -7,5 +7,10 @@ class Post(BaseModel):
     title: str
     content: str
     published: bool
-    created_at: datetime = None
-    updated_at: datetime = None
+    created_at: datetime  = None
+    updated_at: datetime | None = None
+
+class PostRequest(BaseModel):
+    title: str
+    content: str
+    published: bool

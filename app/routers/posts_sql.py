@@ -5,7 +5,7 @@ from psycopg.rows import dict_row
 
 from ..config import Settings
 
-from ..schema import Post
+from ..schema import Post, PostRequest
 
 @lru_cache
 def get_settings():
@@ -32,13 +32,13 @@ while True:
 
 
 @router.get("/")
-async def get_posts():
+async def get_posts() -> list[Post]:
     posts = cur.execute(""" SELECT * FROM posts """).fetchall()
     return posts
 
 
 @router.get("/{id}", responses={404: {"description": "Not Found"}})
-async def get_post(id: int):
+async def get_post(id: int) -> Post:
     post = cur.execute(""" SELECT * FROM posts WHERE id = %s""", (id,)).fetchone()
     if not post:
         raise HTTPException(404, f"Post with ID {id} not found!")
@@ -46,7 +46,7 @@ async def get_post(id: int):
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-async def create_post(post: Post):
+async def create_post(post: PostRequest):
     cur.execute(
         """ INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING * """,
         (post.title, post.content, post.published),
@@ -67,7 +67,7 @@ async def delete_post(id: int):
 
 
 @router.put("/{id}", status_code=status.HTTP_204_NO_CONTENT, responses={404: {"description": "Not Found"}})
-async def update_post(id: int, post: Post):
+async def update_post(id: int, post: PostRequest):
     cur.execute(
         """ UPDATE posts SET title = %(title)s, content = %(content)s, published = %(published)s, updated_at = %(updated_at)s WHERE id = %(id)s RETURNING * """,
         {

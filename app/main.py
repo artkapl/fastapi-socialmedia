@@ -6,7 +6,7 @@ from psycopg.rows import dict_row
 
 import config
 from schema import Post
-from .routers import posts_sql
+from .routers import posts_sql, posts_orm
 
 
 @lru_cache
@@ -18,6 +18,7 @@ settings = get_settings()
 app = FastAPI()
 
 app.include_router(posts_sql.router)
+app.include_router(posts_orm.router)
 
 @app.get("/")
 def read_root():

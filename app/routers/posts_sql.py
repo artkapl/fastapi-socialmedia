@@ -7,15 +7,15 @@ from ..config import Settings
 
 from ..schema import Post, PostRequest
 
+
 @lru_cache
 def get_settings():
     return Settings()
 
+
 settings = get_settings()
 
-router = APIRouter(
-    prefix="/posts"
-)
+router = APIRouter(prefix="/posts")
 
 
 while True:
@@ -56,7 +56,11 @@ async def create_post(post: PostRequest):
     return {"message": "Post created!", "data": new_post}
 
 
-@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT, responses={404: {"description": "Not Found"}})
+@router.delete(
+    "/{id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={404: {"description": "Not Found"}},
+)
 async def delete_post(id: int):
     cur.execute(""" DELETE FROM posts WHERE id = %s RETURNING * """, (id,))
     deleted_post = cur.fetchone()
@@ -66,7 +70,11 @@ async def delete_post(id: int):
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@router.put("/{id}", status_code=status.HTTP_204_NO_CONTENT, responses={404: {"description": "Not Found"}})
+@router.put(
+    "/{id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={404: {"description": "Not Found"}},
+)
 async def update_post(id: int, post: PostRequest):
     cur.execute(
         """ UPDATE posts SET title = %(title)s, content = %(content)s, published = %(published)s, updated_at = %(updated_at)s WHERE id = %(id)s RETURNING * """,

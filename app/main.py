@@ -20,6 +20,7 @@ app = FastAPI()
 app.include_router(posts_sql.router)
 app.include_router(posts_orm.router)
 
+
 @app.get("/")
 def read_root():
     return {"Hello": "World"}

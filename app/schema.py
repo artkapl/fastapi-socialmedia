@@ -1,5 +1,6 @@
 from datetime import datetime
 from pydantic import BaseModel
+from sqlmodel import SQLModel, Field
 
 
 class Post(BaseModel):
@@ -7,10 +8,23 @@ class Post(BaseModel):
     title: str
     content: str
     published: bool
-    created_at: datetime  = None
+    created_at: datetime = None
     updated_at: datetime | None = None
+
 
 class PostRequest(BaseModel):
     title: str
     content: str
     published: bool
+
+
+class PostSQL(SQLModel, table=True):
+    __tablename__: str = "posts_sql"
+    __table_args__ = {"extend_existing": True}
+
+    id: int | None = Field(default=None, primary_key=True)
+    title: str = Field(nullable=False)
+    content: str | None = Field()
+    published: bool = Field(default=True)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime | None = Field()

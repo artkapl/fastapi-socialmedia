@@ -1,6 +1,8 @@
 from datetime import datetime
 from pydantic import BaseModel
 
+# Data classes for SQL Post Routes
+
 
 class Post(BaseModel):
     id: int = None
@@ -15,4 +17,3 @@ class PostRequest(BaseModel):
     title: str
     content: str
     published: bool
-

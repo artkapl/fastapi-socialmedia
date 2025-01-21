@@ -23,7 +23,7 @@ def read_root():
     return {"Hello": "World"}
 
 
-@app.get("/info", description="Get detailed database information", name="Get DB Info")
+@app.get("/db-info", description="Get detailed database information", name="Get Database Info")
 async def info(settings: Annotated[config.Settings, Depends(get_settings)]):
     return {
         "app_name": settings.app_name,

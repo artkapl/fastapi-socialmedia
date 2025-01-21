@@ -1,12 +1,10 @@
 from functools import lru_cache
 from typing import Annotated
-from fastapi import Depends, FastAPI, HTTPException, Response, status
-import psycopg
+from fastapi import Depends, FastAPI
 from psycopg.rows import dict_row
 
 import config
-from schema import Post
-from .routers import posts_sql, posts_orm
+from .routers import posts_orm
 
 
 @lru_cache
@@ -17,7 +15,6 @@ def get_settings():
 settings = get_settings()
 app = FastAPI()
 
-app.include_router(posts_sql.router)
 app.include_router(posts_orm.router)
 
 

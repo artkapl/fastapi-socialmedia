@@ -25,3 +25,6 @@ def get_session():
 
 
 SessionDep = Annotated[Session, Depends(get_session)]
+def commit_and_refresh(session: SessionDep, record: SQLModel):
+    session.commit()
+    session.refresh(record)

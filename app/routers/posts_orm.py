@@ -4,7 +4,7 @@ from datetime import datetime
 
 from fastapi import Depends, APIRouter, HTTPException, Query, Response, status
 from sqlmodel import Field, create_engine, select, SQLModel
-from app.database import SessionDep, engine
+from app.database import SessionDep, commit_and_refresh, engine
 
 from app.models import Posts, PostCreate, PostUpdate
 
@@ -45,11 +45,11 @@ def get_post(id: int, session: SessionDep):
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=Posts)
 def create_post(post: PostCreate, session: SessionDep):
-    # Convert PostRequest to Post in DB
+    # Convert PostCreate object to Post in DB
     db_post = Posts.model_validate(post)
     # Store Post in DB
     session.add(db_post)
-    session.commit()
+    commit_and_refresh(session, db_post)
     return db_post
 
 
@@ -65,8 +65,7 @@ def update_post(id: int, post: PostUpdate, session: SessionDep):
     db_post.updated_at = datetime.utcnow()
     # Commit to DB
     session.add(db_post)
-    session.commit()
-    session.refresh(db_post)
+    commit_and_refresh(session, db_post)
     return db_post
 
 

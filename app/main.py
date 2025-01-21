@@ -7,12 +7,7 @@ import config
 from .routers import posts_orm
 
 
-@lru_cache
-def get_settings():
-    return config.Settings()
-
-
-settings = get_settings()
+settings = config.get_settings()
 app = FastAPI()
 
 app.include_router(posts_orm.router)
@@ -24,7 +19,7 @@ def read_root():
 
 
 @app.get("/db-info", description="Get detailed database information", name="Get Database Info")
-async def info(settings: Annotated[config.Settings, Depends(get_settings)]):
+async def info(settings: Annotated[config.Settings, Depends(config.get_settings)]):
     return {
         "app_name": settings.app_name,
         "db_host": settings.db_host,

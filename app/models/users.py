@@ -1,4 +1,4 @@
-from sqlmodel import Field
+from sqlmodel import Field, SQLModel
 from pydantic import EmailStr
 
 from .models import BaseModel
@@ -8,4 +8,9 @@ class Users(BaseModel, table=True):
     first_name: str | None = Field()
     last_name: str | None = Field()
     email: EmailStr = Field(unique=True)
-    password: str = Field(nullable=False)
+    username: str
+    password: str
+
+class UserCreate(SQLModel):
+    email: EmailStr
+    password: str

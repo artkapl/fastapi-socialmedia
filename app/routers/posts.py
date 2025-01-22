@@ -7,10 +7,6 @@ from app.database import SessionDep, commit_and_refresh
 
 from app.models.posts import Posts, PostCreate, PostUpdate
 
-################################
-###   SQLMODEL ORM QUERIES   ###
-################################
-
 
 router = APIRouter(prefix="/posts")
 

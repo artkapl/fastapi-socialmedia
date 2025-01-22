@@ -1,7 +1,6 @@
-from functools import lru_cache
 from typing import Annotated
 from fastapi import Depends
-from sqlmodel import Field, SQLModel, Session, create_engine, select
+from sqlmodel import SQLModel, Session, create_engine
 
 import config
 

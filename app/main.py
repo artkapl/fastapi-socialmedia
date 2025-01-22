@@ -4,13 +4,13 @@ from fastapi import Depends, FastAPI
 from psycopg.rows import dict_row
 
 import config
-from .routers import posts_orm
+from .routers import posts
 
 
 settings = config.get_settings()
 app = FastAPI()
 
-app.include_router(posts_orm.router)
+app.include_router(posts.router)
 
 
 @app.get("/")

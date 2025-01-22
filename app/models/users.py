@@ -4,11 +4,12 @@ from pydantic import EmailStr
 from .models import BaseModel
 
 
-class Users(BaseModel, table=True):
-    first_name: str | None = Field()
-    last_name: str | None = Field()
+class User(BaseModel, table=True):
+    __tablename__ = "users"
+
+    first_name: str | None = Field(default=None)
+    last_name: str | None = Field(default=None)
     email: EmailStr = Field(unique=True)
-    username: str
     password: str
 
 class UserCreate(SQLModel):

@@ -6,14 +6,14 @@ from .models import BaseModel
 
 class Posts(BaseModel, table=True):
     title: str = Field(index=True, nullable=False)
-    content: str = Field(nullable=False)
+    content: str
     published: bool = Field(default=True, nullable=False)
 
 
 class PostCreate(SQLModel):
-    title: str = Field(index=True, nullable=False)
-    content: str = Field()
-    published: bool = Field(default=True)
+    title: str
+    content: str
+    published: bool
 
 
 class PostUpdate(PostCreate):

@@ -1,9 +1,9 @@
-from functools import lru_cache
 from typing import Annotated
 from fastapi import Depends, FastAPI
-from psycopg.rows import dict_row
+from sqlmodel import SQLModel
 
 import config
+from .database import engine
 from .routers import posts
 
 
@@ -11,6 +11,15 @@ settings = config.get_settings()
 app = FastAPI()
 
 app.include_router(posts.router)
+
+
+def create_db_and_tables():
+    SQLModel.metadata.create_all(engine)
+
+
+@app.on_event("startup")
+def on_startup():
+    create_db_and_tables()
 
 
 @app.get("/")

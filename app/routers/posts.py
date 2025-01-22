@@ -1,12 +1,11 @@
-from functools import lru_cache
 from typing import Annotated
 from datetime import datetime
 
 from fastapi import Depends, APIRouter, HTTPException, Query, Response, status
-from sqlmodel import Field, create_engine, select, SQLModel
-from app.database import SessionDep, commit_and_refresh, engine
+from sqlmodel import Field, select
+from app.database import SessionDep, commit_and_refresh
 
-from app.models import Posts, PostCreate, PostUpdate
+from app.models.posts import Posts, PostCreate, PostUpdate
 
 ################################
 ###   SQLMODEL ORM QUERIES   ###
@@ -14,15 +13,6 @@ from app.models import Posts, PostCreate, PostUpdate
 
 
 router = APIRouter(prefix="/posts")
-
-
-def create_db_and_tables():
-    SQLModel.metadata.create_all(engine)
-
-
-@router.on_event("startup")
-def on_startup():
-    create_db_and_tables()
 
 
 @router.get("/", response_model=list[Posts])

@@ -4,13 +4,14 @@ from sqlmodel import SQLModel
 
 import config
 from .database import engine
-from .routers import posts
+from .routers import posts, users
 
 
 settings = config.get_settings()
 app = FastAPI()
 
 app.include_router(posts.router)
+app.include_router(users.router)
 
 
 def create_db_and_tables():

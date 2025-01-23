@@ -31,7 +31,7 @@ def read_root():
 @app.get("/db-info", description="Get detailed database information", name="Get Database Info")
 async def info(settings: Annotated[config.Settings, Depends(config.get_settings)]):
     return {
-        "app_name": settings.app_name,
-        "db_host": settings.db_host,
-        "db_name": settings.db_name,
+        "app_name": settings.APP_NAME,
+        "db_host": settings.DB_HOST,
+        "db_name": settings.DB_NAME,
     }

@@ -7,7 +7,7 @@ import config
 settings = config.get_settings()
 
 psql_dialect = "postgresql+psycopg"  # +psycopg is necessary for newer psycopg support (vs. default==psycopg2)
-postgres_url = f"{psql_dialect}://{settings.db_user}:{settings.db_password}@{settings.db_host}:{settings.db_port}/{settings.db_name}"
+postgres_url = f"{psql_dialect}://{settings.DB_USER}:{settings.DB_PASSWORD}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}"
 
 engine = create_engine(postgres_url, echo=True)
 

@@ -1,17 +1,19 @@
 from typing import Annotated
 from fastapi import Depends, FastAPI
 from sqlmodel import SQLModel
+from app.routers.main_router import api_router
 
 import config
 from .database import engine
-from .routers import posts, users
+
+
+API_PREFIX: str = "/api/v1"
 
 
 settings = config.get_settings()
 app = FastAPI()
 
-app.include_router(posts.router)
-app.include_router(users.router)
+app.include_router(api_router, prefix=API_PREFIX)
 
 
 def create_db_and_tables():
@@ -28,7 +30,11 @@ def read_root():
     return {"Hello": "World"}
 
 
-@app.get("/db-info", description="Get detailed database information", name="Get Database Info")
+@app.get(
+    "/db-info",
+    description="Get detailed database information",
+    name="Get Database Info",
+)
 async def info(settings: Annotated[config.Settings, Depends(config.get_settings)]):
     return {
         "app_name": settings.APP_NAME,

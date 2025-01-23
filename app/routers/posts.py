@@ -21,7 +21,7 @@ def get_posts_paginated(
     return posts
 
 
-@router.get("/{id}", response_model=Post, responses={404: {"description": "Not Found"}})
+@router.get("/{id}", response_model=Post)
 def get_post(id: int, session: SessionDep):
     post = session.get(Post, id)
     if not post:
@@ -39,14 +39,15 @@ def create_post(post: PostCreate, session: SessionDep):
     return db_post
 
 
-@router.put("/{id}", response_model=Post, responses={404: {"description": "Not Found"}})
+@router.patch("/{id}", response_model=Post)
 def update_post(id: int, post: PostUpdate, session: SessionDep):
     # get post by ID
     db_post = session.get(Post, id)
     if not db_post:
         raise HTTPException(status_code=404, detail="Post not found")
     # Update post with Update values
-    db_post.sqlmodel_update(post)
+    updated_data = post.model_dump(exclude_unset=True)
+    db_post.sqlmodel_update(updated_data)
     # Set update time
     db_post.updated_at = datetime.utcnow()
     # Commit to DB
@@ -55,7 +56,7 @@ def update_post(id: int, post: PostUpdate, session: SessionDep):
     return db_post
 
 
-@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT, responses={404: {"description": "Not Found"}})
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_post(id: int, session: SessionDep):
     # get post by ID
     db_post = session.get(Post, id)

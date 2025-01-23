@@ -12,15 +12,18 @@ class User(BaseModel, table=True):
     email: EmailStr = Field(unique=True)
     password: str
 
+
 class UserCreate(SQLModel):
     email: EmailStr
     password: str
+
 
 class UserUpdate(SQLModel):
     email: EmailStr | None = None
     password: str | None = None
     first_name: str | None = None
     last_name: str | None = None
+
 
 class UserPublic(BaseModel):
     email: EmailStr

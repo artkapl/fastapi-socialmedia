@@ -9,6 +9,7 @@ from app.models.users import UserCreate, User, UserPublic, UserUpdate
 
 router = APIRouter(prefix="/users")
 
+
 @router.get("/", response_model=list[UserPublic])
 def get_users_paginated(
     session: SessionDep,
@@ -18,6 +19,15 @@ def get_users_paginated(
     users = session.exec(select(User).offset(offset).limit(limit)).all()
     return users
 
+
+@router.get("/{id}", response_model=UserPublic)
+def get_user(id: int, session: SessionDep):
+    user = session.get(User, id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found!")
+    return user
+
+
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=User)
 def create_user(user: UserCreate, session: SessionDep):
     # Convert PostCreate object to Post in DB
@@ -26,6 +36,7 @@ def create_user(user: UserCreate, session: SessionDep):
     session.add(db_user)
     commit_and_refresh(session, db_user)
     return db_user
+
 
 @router.patch("/{id}", response_model=UserPublic)
 def update_user(user: UserUpdate, id: int, session: SessionDep):

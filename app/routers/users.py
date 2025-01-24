@@ -32,7 +32,7 @@ def get_user(id: int, session: SessionDep):
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=User)
 def create_user(user: UserCreate, session: SessionDep):
     # Hash Password
-    password_crypt = {'password_crypt': get_password_hash(user.password)}
+    password_crypt = {"password_crypt": get_password_hash(user.password)}
     # Convert PostCreate object to Post in DB
     db_user = User.model_validate(user, update=password_crypt)
     # Store Post in DB
@@ -54,7 +54,7 @@ def update_user(user: UserUpdate, id: int, session: SessionDep):
     extra_data = {}
     if "password" in user_data:
         hashed_pw = get_password_hash(user.password)
-        extra_data['password_crypt'] = hashed_pw
+        extra_data["password_crypt"] = hashed_pw
 
     db_user.sqlmodel_update(user_data, update=extra_data)
     db_user.updated_at = datetime.utcnow()

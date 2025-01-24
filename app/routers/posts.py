@@ -49,7 +49,7 @@ def update_post(id: int, post: PostUpdate, session: SessionDep):
     updated_data = post.model_dump(exclude_unset=True)
     db_post.sqlmodel_update(updated_data)
     # Set update time
-    db_post.updated_at = datetime.utcnow()
+    db_post.updated_at = datetime.now(datetime.UTC)
     # Commit to DB
     session.add(db_post)
     commit_and_refresh(session, db_post)

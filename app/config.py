@@ -12,6 +12,10 @@ class Settings(BaseSettings):
 
     API_PREFIX: str = "/api/v1"
 
+    # Secret Algorithm Key for JWT Token generation
+    SECRET_KEY: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+
     model_config = SettingsConfigDict(env_file=".env")
 
 

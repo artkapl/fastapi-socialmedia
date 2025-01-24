@@ -1,5 +1,5 @@
 from typing import Annotated
-from datetime import datetime
+from datetime import UTC, datetime
 
 from fastapi import Depends, APIRouter, HTTPException, Query, Response, status
 from sqlmodel import Field, select
@@ -49,7 +49,7 @@ def update_post(id: int, post: PostUpdate, session: SessionDep):
     updated_data = post.model_dump(exclude_unset=True)
     db_post.sqlmodel_update(updated_data)
     # Set update time
-    db_post.updated_at = datetime.now(datetime.UTC)
+    db_post.updated_at = datetime.now(UTC)
     # Commit to DB
     session.add(db_post)
     commit_and_refresh(session, db_post)

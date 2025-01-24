@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Annotated
 from fastapi import APIRouter, HTTPException, Query, status
 from sqlmodel import select
@@ -57,7 +57,7 @@ def update_user(user: UserUpdate, id: int, session: SessionDep):
         extra_data["password_crypt"] = hashed_pw
 
     db_user.sqlmodel_update(user_data, update=extra_data)
-    db_user.updated_at = datetime.now(timezone.UTC)
+    db_user.updated_at = datetime.now(UTC)
     session.add(db_user)
     commit_and_refresh(session, db_user)
     return db_user

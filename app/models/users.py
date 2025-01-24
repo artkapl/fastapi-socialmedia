@@ -10,7 +10,7 @@ class User(BaseModel, table=True):
     first_name: str | None = Field(default=None)
     last_name: str | None = Field(default=None)
     email: EmailStr = Field(unique=True)
-    password: str
+    password_crypt: str
 
 
 class UserCreate(SQLModel):
@@ -29,3 +29,6 @@ class UserPublic(BaseModel):
     email: EmailStr
     first_name: str | None
     last_name: str | None
+
+class UserLogin(UserCreate):
+    pass

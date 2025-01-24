@@ -8,6 +8,7 @@ dependencies = [
     "argon2-cffi>=23.1.0",
     "fastapi[all]>=0.115.6",
     "psycopg>=3.2.4",
+    "pyjwt>=2.10.1",
     "python-dotenv>=1.0.1",
     "sqlmodel>=0.0.22",
     "uvicorn[standard]>=0.34.0",

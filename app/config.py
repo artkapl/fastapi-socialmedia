@@ -10,6 +10,8 @@ class Settings(BaseSettings):
     DB_USER: str
     DB_PASSWORD: str
 
+    API_PREFIX: str = "/api/v1"
+
     model_config = SettingsConfigDict(env_file=".env")
 
 

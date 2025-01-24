@@ -7,13 +7,10 @@ import config
 from .database import engine
 
 
-API_PREFIX: str = "/api/v1"
-
-
 settings = config.get_settings()
 app = FastAPI()
 
-app.include_router(api_router, prefix=API_PREFIX)
+app.include_router(api_router)
 
 
 def create_db_and_tables():

@@ -8,7 +8,7 @@ from app.security import get_password_hash
 from app.models.users import UserCreate, User, UserPublic, UserUpdate
 
 
-router = APIRouter(prefix="/users")
+router = APIRouter(prefix="/users", tags=["Users"])
 
 
 @router.get("/", response_model=list[UserPublic])

@@ -8,7 +8,7 @@ from app.database import SessionDep, commit_and_refresh
 from app.models.posts import Post, PostCreate, PostUpdate
 
 
-router = APIRouter(prefix="/posts")
+router = APIRouter(prefix="/posts", tags=["Posts"])
 
 
 @router.get("/", response_model=list[Post])

@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     # Secret Algorithm Key for JWT Token generation
     SECRET_KEY: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    ALGORITHM: str = "HS256"
 
     model_config = SettingsConfigDict(env_file=".env")
 

@@ -1,28 +1,39 @@
+from typing import Annotated
 import argon2
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import select
 
+from app import security
 from app.database import SessionDep
-from app.models.users import User, UserLogin
-from app.security import verify_password, create_access_token
+from app.models.auth import Token
+from app.models.users import User
 
 
 router = APIRouter(tags=["Authentication"])
 
 
 @router.post("/login")
-def login_user(login: UserLogin, session: SessionDep):
-    user = session.exec(select(User).where(User.email == login.email)).first()
+def login_user(
+    login_form: Annotated[OAuth2PasswordRequestForm, Depends()], session: SessionDep
+) -> Token:
+    user = session.exec(select(User).where(User.email == login_form.username)).first()
     if not user:
-        raise HTTPException(status_code=404, detail="Invalid Credentials")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+        )
 
     try:
-        verify_password(user.password_crypt, login.password)
+        security.verify_password(user.password_crypt, login_form.password)
     except argon2.exceptions.VerifyMismatchError:
-        raise HTTPException(status_code=404, detail="Invalid Credentials")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+        )
 
     # Create token
-    access_token = create_access_token(user.id)
+    access_token = security.create_access_token({"sub": str(user.id)})
 
     # return token
-    return {"token": access_token}
+    return Token(access_token=access_token, token_type="bearer")

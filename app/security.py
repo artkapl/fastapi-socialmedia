@@ -1,14 +1,25 @@
 import jwt
+from jwt.exceptions import InvalidTokenError
 from datetime import datetime, timedelta, timezone
 from typing import Annotated, Any
 from argon2 import PasswordHasher
 
-from app.config import get_settings
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
 
-ALGORITHM = "HS256"
+from app.config import get_settings
+from app.models.auth import TokenData
+from app.database import SessionDep
+from app.models.users import User
+
 
 ph = PasswordHasher()
 settings = get_settings()
+
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+
+TokenDep = Annotated[str, Depends(oauth2_scheme)]
 
 
 def verify_password(hashed_password: str, plain_password: str) -> bool:
@@ -38,3 +49,36 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
         to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM
     )
     return encoded_jwt
+
+
+def get_current_user(
+    session: SessionDep,
+    token: TokenDep,
+) -> User:
+    """Return the currently logged in user or raise an UNAUTHORIZED exception."""
+    token_data = verify_access_token(token)
+
+    user = session.get(User, token_data.sub)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
+
+def verify_access_token(token):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+        )
+        token_data = TokenData(**payload)
+    except InvalidTokenError:
+        raise credentials_exception
+    return token_data
+
+
+CurrentUser = Annotated[User, Depends(get_current_user)]
+

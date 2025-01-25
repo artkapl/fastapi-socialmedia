@@ -1,9 +1,9 @@
 from datetime import UTC, datetime
 from typing import Annotated
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlmodel import select
 from app.database import SessionDep, commit_and_refresh
-from app.security import get_password_hash
+from app.security import get_current_user, get_password_hash
 
 from app.models.users import UserCreate, User, UserPublic, UserUpdate
 
@@ -29,7 +29,12 @@ def get_user(id: int, session: SessionDep):
     return user
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED, response_model=User)
+@router.post(
+    "/",
+    status_code=status.HTTP_201_CREATED,
+    response_model=User,
+    dependencies=[Depends(get_current_user)],
+)
 def create_user(user: UserCreate, session: SessionDep):
     # Hash Password
     password_crypt = {"password_crypt": get_password_hash(user.password)}

@@ -11,6 +11,7 @@ class User(BaseModel, table=True):
     last_name: str | None = Field(default=None)
     email: EmailStr = Field(unique=True)
     password_crypt: str
+    is_superuser: bool = False
 
 
 class UserCreate(SQLModel):

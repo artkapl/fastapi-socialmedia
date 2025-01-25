@@ -2,6 +2,7 @@ from typing import Annotated
 from fastapi import Depends, FastAPI
 from sqlmodel import SQLModel
 from app.routers.main_router import api_router
+from app.security import get_current_active_superuser
 
 import config
 from .database import engine
@@ -28,9 +29,10 @@ def read_root():
 
 
 @app.get(
-    "/db-info",
+    "/admin/info",
     description="Get detailed database information",
     name="Get Database Info",
+    dependencies=[Depends(get_current_active_superuser)],
 )
 async def info(settings: Annotated[config.Settings, Depends(config.get_settings)]):
     return {

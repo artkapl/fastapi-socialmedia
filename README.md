@@ -14,3 +14,4 @@ Future features:
 - Unit & integration tests
 - CI/CD with Github Actions
 - Deployment
+- A (React based?) web frontend

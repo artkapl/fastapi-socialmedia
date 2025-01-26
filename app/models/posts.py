@@ -1,7 +1,8 @@
-from sqlmodel import SQLModel, Field
+from sqlmodel import Relationship, SQLModel, Field
 from pydantic import EmailStr
 
 from .models import BaseModel
+from .users import User
 
 
 class Post(BaseModel, table=True):
@@ -11,7 +12,8 @@ class Post(BaseModel, table=True):
     content: str
     published: bool = Field(default=True, nullable=False)
 
-    owner_id: int = Field(foreign_key="users.id")
+    owner_id: int = Field(foreign_key="users.id", ondelete="CASCADE")
+    owner: User = Relationship(back_populates="posts")
 
 
 class PostCreate(SQLModel):

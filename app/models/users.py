@@ -1,5 +1,6 @@
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, Relationship, SQLModel
 from pydantic import EmailStr
+
 
 from .models import BaseModel
 
@@ -12,6 +13,8 @@ class User(BaseModel, table=True):
     email: EmailStr = Field(unique=True)
     password_crypt: str
     is_superuser: bool = False
+
+    posts: list["Post"] = Relationship(back_populates="owner", cascade_delete=True)  # type: ignore
 
 
 class UserCreate(SQLModel):

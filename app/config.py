@@ -3,7 +3,10 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
+    """These variables should be stored in a `.env` file in the project's base directory"""
     APP_NAME: str = "FastAPI Social Media Demo API"
+
+    # DB values are required for the PostgreSQL database connection
     DB_HOST: str
     DB_PORT: int
     DB_NAME: str

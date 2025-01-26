@@ -49,6 +49,11 @@ def update_post(
     db_post = session.get(Post, id)
     if not db_post:
         raise HTTPException(status_code=404, detail="Post not found")
+    
+    # User can only edit their own posts (admin can do all)
+    if not current_user.is_superuser and current_user != db_post.owner:
+        raise HTTPException(status_code=403, detail="You are not allowed to change someone else's post")
+
     # Update post with Update values
     updated_data = post.model_dump(exclude_unset=True)
     db_post.sqlmodel_update(updated_data)
@@ -66,6 +71,11 @@ def delete_post(id: int, session: SessionDep, current_user: CurrentUser) -> Resp
     db_post = session.get(Post, id)
     if not db_post:
         raise HTTPException(status_code=404, detail="Post not found")
+
+    # User can only delete their own posts (admin can do all)
+    if not current_user.is_superuser and current_user != db_post.owner:
+        raise HTTPException(status_code=403, detail="You are not allowed to delete someone else's post")
+
     session.delete(db_post)
     session.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)

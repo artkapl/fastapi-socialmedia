@@ -5,7 +5,7 @@ This app contains:
 - A database connection using PostgreSQL
 - ORM-based database communication with SQLModel
 - User login and authentication with JWT
-- State of the art password hashing with the Argon2id hashing function for secure password storage in the database
+- State of the art password hashing with the Argon2id hashing function for secure password DB storage
 - A complete API documentation using Swagger
 
 Future features:

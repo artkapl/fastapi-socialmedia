@@ -7,9 +7,9 @@ from argon2 import PasswordHasher
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 
-from app.config import get_settings
+from .config import get_settings
 from app.models.auth import TokenData
-from app.database import SessionDep
+from .database import SessionDep
 from app.models.users import User
 
 

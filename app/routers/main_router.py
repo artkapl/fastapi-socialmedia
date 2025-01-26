@@ -1,7 +1,6 @@
-from typing import Annotated
 from fastapi import APIRouter, Depends
 
-from app import config
+from app.core import config
 from . import posts, users, auth
 
 ###################

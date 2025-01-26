@@ -3,10 +3,10 @@ from datetime import UTC, datetime
 
 from fastapi import Depends, APIRouter, HTTPException, Query, Response, status
 from sqlmodel import Field, select
-from app.database import SessionDep, commit_and_refresh
+from app.core.database import SessionDep, commit_and_refresh
 
 from app.models.posts import Post, PostCreate, PostUpdate
-from app.security import CurrentUser
+from app.core.security import CurrentUser
 
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
@@ -41,7 +41,9 @@ def create_post(post: PostCreate, session: SessionDep, current_user: CurrentUser
 
 
 @router.patch("/{id}", response_model=Post)
-def update_post(id: int, post: PostUpdate, session: SessionDep, current_user: CurrentUser):
+def update_post(
+    id: int, post: PostUpdate, session: SessionDep, current_user: CurrentUser
+):
     # get post by ID
     db_post = session.get(Post, id)
     if not db_post:

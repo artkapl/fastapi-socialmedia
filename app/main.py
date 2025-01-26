@@ -2,10 +2,10 @@ from typing import Annotated
 from fastapi import Depends, FastAPI
 from sqlmodel import SQLModel
 from app.routers.main_router import api_router
-from app.security import get_current_active_superuser
+from app.core.security import get_current_active_superuser
 
-import config
-from .database import engine
+import core.config as config
+from app.core.database import engine
 
 
 settings = config.get_settings()

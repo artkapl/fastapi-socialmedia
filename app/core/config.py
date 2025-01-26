@@ -4,6 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     """These variables should be stored in a `.env` file in the project's base directory"""
+
     APP_NAME: str = "FastAPI Social Media Demo API"
 
     # DB values are required for the PostgreSQL database connection
@@ -12,6 +13,7 @@ class Settings(BaseSettings):
     DB_NAME: str
     DB_USER: str
     DB_PASSWORD: str
+    PSQL_DIALECT: str = "postgresql+psycopg"  # +psycopg is necessary for newer psycopg support (vs. default==psycopg2)
 
     API_PREFIX: str = "/api/v1"
 
@@ -23,6 +25,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env")
 
 
+# caching to avoid unneeded duplicate fetching of settings values
 @lru_cache
 def get_settings():
     return Settings()

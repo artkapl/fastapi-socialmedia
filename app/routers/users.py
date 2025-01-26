@@ -3,8 +3,8 @@ from sqlite3 import dbapi2
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlmodel import select
-from app.database import SessionDep, commit_and_refresh
-from app.security import CurrentUser, get_current_user, get_password_hash
+from app.core.database import SessionDep, commit_and_refresh
+from app.core.security import CurrentUser, get_current_user, get_password_hash
 
 from app.models.users import UserCreate, User, UserPublic, UserUpdate
 

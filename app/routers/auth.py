@@ -4,8 +4,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import select
 
-from app import security
-from app.database import SessionDep
+from app.core import security
+from app.core.database import SessionDep
 from app.models.auth import Token
 from app.models.users import User
 

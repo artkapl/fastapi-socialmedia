@@ -33,7 +33,8 @@ def get_post(id: int, session: SessionDep):
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=Post)
 def create_post(post: PostCreate, session: SessionDep, current_user: CurrentUser):
     # Convert PostCreate object to Post in DB
-    db_post = Post.model_validate(post)
+    owner_dict = {"owner_id": current_user.id}
+    db_post = Post.model_validate(post, update=owner_dict)
     # Store Post in DB
     session.add(db_post)
     commit_and_refresh(session, db_post)

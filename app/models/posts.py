@@ -11,6 +11,8 @@ class Post(BaseModel, table=True):
     content: str
     published: bool = Field(default=True, nullable=False)
 
+    owner_id: int = Field(foreign_key="users.id")
+
 
 class PostCreate(SQLModel):
     title: str

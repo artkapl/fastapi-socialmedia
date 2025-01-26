@@ -6,6 +6,7 @@ from sqlmodel import Field, select
 from app.database import SessionDep, commit_and_refresh
 
 from app.models.posts import Post, PostCreate, PostUpdate
+from app.security import CurrentUser
 
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
@@ -30,7 +31,7 @@ def get_post(id: int, session: SessionDep):
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=Post)
-def create_post(post: PostCreate, session: SessionDep):
+def create_post(post: PostCreate, session: SessionDep, current_user: CurrentUser):
     # Convert PostCreate object to Post in DB
     db_post = Post.model_validate(post)
     # Store Post in DB
@@ -40,7 +41,7 @@ def create_post(post: PostCreate, session: SessionDep):
 
 
 @router.patch("/{id}", response_model=Post)
-def update_post(id: int, post: PostUpdate, session: SessionDep):
+def update_post(id: int, post: PostUpdate, session: SessionDep, current_user: CurrentUser):
     # get post by ID
     db_post = session.get(Post, id)
     if not db_post:
@@ -57,7 +58,7 @@ def update_post(id: int, post: PostUpdate, session: SessionDep):
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_post(id: int, session: SessionDep):
+def delete_post(id: int, session: SessionDep, current_user: CurrentUser):
     # get post by ID
     db_post = session.get(Post, id)
     if not db_post:

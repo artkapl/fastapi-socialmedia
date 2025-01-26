@@ -17,13 +17,13 @@ def get_users_paginated(
     session: SessionDep,
     offset: int = 0,
     limit: Annotated[int, Query(le=100)] = 100,
-):
+) -> list[User]:
     users = session.exec(select(User).offset(offset).limit(limit)).all()
     return users
 
 
 @router.get("/{id}", response_model=UserPublic)
-def get_user(id: int, session: SessionDep):
+def get_user(id: int, session: SessionDep) -> User:
     user = session.get(User, id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found!")
@@ -36,7 +36,7 @@ def get_user(id: int, session: SessionDep):
     response_model=User,
     dependencies=[Depends(get_current_user)],
 )
-def create_user(user: UserCreate, session: SessionDep):
+def create_user(user: UserCreate, session: SessionDep) -> User:
     # Hash Password
     password_crypt = {"password_crypt": get_password_hash(user.password)}
     # Convert PostCreate object to Post in DB
@@ -50,7 +50,7 @@ def create_user(user: UserCreate, session: SessionDep):
 @router.patch("/{id}", response_model=UserPublic)
 def update_user(
     user: UserUpdate, id: int, session: SessionDep, current_user: CurrentUser
-):
+) -> User:
     db_user = session.get(User, id)
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found!")
@@ -72,7 +72,7 @@ def update_user(
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_user(id: int, session: SessionDep, current_user: CurrentUser):
+def delete_user(id: int, session: SessionDep, current_user: CurrentUser) -> Response:
     db_user = session.get(User, id)
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found!")

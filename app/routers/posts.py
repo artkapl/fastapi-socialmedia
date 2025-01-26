@@ -17,13 +17,13 @@ def get_posts_paginated(
     session: SessionDep,
     offset: int = 0,
     limit: Annotated[int, Query(le=100)] = 100,
-):
+) -> list[Post]:
     posts = session.exec(select(Post).offset(offset).limit(limit)).all()
     return posts
 
 
 @router.get("/{id}", response_model=Post)
-def get_post(id: int, session: SessionDep):
+def get_post(id: int, session: SessionDep) -> Post:
     post = session.get(Post, id)
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
@@ -31,7 +31,7 @@ def get_post(id: int, session: SessionDep):
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=Post)
-def create_post(post: PostCreate, session: SessionDep, current_user: CurrentUser):
+def create_post(post: PostCreate, session: SessionDep, current_user: CurrentUser) -> Post:
     # Convert PostCreate object to Post in DB
     owner_dict = {"owner_id": current_user.id}
     db_post = Post.model_validate(post, update=owner_dict)
@@ -44,7 +44,7 @@ def create_post(post: PostCreate, session: SessionDep, current_user: CurrentUser
 @router.patch("/{id}", response_model=Post)
 def update_post(
     id: int, post: PostUpdate, session: SessionDep, current_user: CurrentUser
-):
+) -> Post:
     # get post by ID
     db_post = session.get(Post, id)
     if not db_post:
@@ -61,7 +61,7 @@ def update_post(
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_post(id: int, session: SessionDep, current_user: CurrentUser):
+def delete_post(id: int, session: SessionDep, current_user: CurrentUser) -> Response:
     # get post by ID
     db_post = session.get(Post, id)
     if not db_post:

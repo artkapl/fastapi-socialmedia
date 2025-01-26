@@ -1,9 +1,10 @@
 from datetime import UTC, datetime
+from sqlite3 import dbapi2
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlmodel import select
 from app.database import SessionDep, commit_and_refresh
-from app.security import get_current_user, get_password_hash
+from app.security import CurrentUser, get_current_user, get_password_hash
 
 from app.models.users import UserCreate, User, UserPublic, UserUpdate
 
@@ -47,7 +48,9 @@ def create_user(user: UserCreate, session: SessionDep):
 
 
 @router.patch("/{id}", response_model=UserPublic)
-def update_user(user: UserUpdate, id: int, session: SessionDep):
+def update_user(
+    user: UserUpdate, id: int, session: SessionDep, current_user: CurrentUser
+):
     db_user = session.get(User, id)
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found!")
@@ -66,3 +69,15 @@ def update_user(user: UserUpdate, id: int, session: SessionDep):
     session.add(db_user)
     commit_and_refresh(session, db_user)
     return db_user
+
+
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_user(id: int, session: SessionDep, current_user: CurrentUser):
+    db_user = session.get(User, id)
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found!")
+    # if not current_user.is_superuser or current_user.id != db_user.id:
+    # raise 403
+    session.delete(db_user)
+    session.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

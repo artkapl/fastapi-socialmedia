@@ -1,5 +1,4 @@
 from datetime import UTC, datetime
-from sqlite3 import dbapi2
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlmodel import select

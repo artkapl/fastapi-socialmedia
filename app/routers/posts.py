@@ -31,7 +31,9 @@ def get_post(id: int, session: SessionDep) -> Post:
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=Post)
-def create_post(post: PostCreate, session: SessionDep, current_user: CurrentUser) -> Post:
+def create_post(
+    post: PostCreate, session: SessionDep, current_user: CurrentUser
+) -> Post:
     # Convert PostCreate object to Post in DB
     author_dict = {"author_id": current_user.id}
     db_post = Post.model_validate(post, update=author_dict)
@@ -49,10 +51,12 @@ def update_post(
     db_post = session.get(Post, id)
     if not db_post:
         raise HTTPException(status_code=404, detail="Post not found")
-    
+
     # User can only edit their own posts (admin can do all)
     if not current_user.is_superuser and current_user != db_post.author:
-        raise HTTPException(status_code=403, detail="You are not allowed to change someone else's post")
+        raise HTTPException(
+            status_code=403, detail="You are not allowed to change someone else's post"
+        )
 
     # Update post with Update values
     updated_data = post.model_dump(exclude_unset=True)
@@ -74,7 +78,9 @@ def delete_post(id: int, session: SessionDep, current_user: CurrentUser) -> Resp
 
     # User can only delete their own posts (admin can do all)
     if not current_user.is_superuser and current_user != db_post.author:
-        raise HTTPException(status_code=403, detail="You are not allowed to delete someone else's post")
+        raise HTTPException(
+            status_code=403, detail="You are not allowed to delete someone else's post"
+        )
 
     session.delete(db_post)
     session.commit()

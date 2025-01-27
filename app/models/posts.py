@@ -22,5 +22,7 @@ class PostCreate(SQLModel):
     published: bool
 
 
-class PostUpdate(PostCreate):
-    pass
+class PostUpdate(SQLModel):
+    title: str | None = None
+    content: str | None = None
+    published: bool | None = None

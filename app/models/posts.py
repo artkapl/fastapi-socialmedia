@@ -12,8 +12,8 @@ class Post(BaseModel, table=True):
     content: str
     published: bool = Field(default=True, nullable=False)
 
-    owner_id: int = Field(foreign_key="users.id", ondelete="CASCADE")
-    owner: User = Relationship(back_populates="posts")
+    author_id: int = Field(foreign_key="users.id", ondelete="CASCADE")
+    author: User = Relationship(back_populates="posts")
 
 
 class PostCreate(SQLModel):

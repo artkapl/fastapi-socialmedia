@@ -14,7 +14,7 @@ class User(BaseModel, table=True):
     password_crypt: str
     is_superuser: bool = False
 
-    posts: list["Post"] = Relationship(back_populates="owner", cascade_delete=True)  # type: ignore
+    posts: list["Post"] = Relationship(back_populates="author", cascade_delete=True)  # type: ignore
 
 
 class UserCreate(SQLModel):

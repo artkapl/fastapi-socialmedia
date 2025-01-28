@@ -2,7 +2,7 @@ from typing import Annotated
 from datetime import UTC, datetime
 
 from fastapi import Depends, APIRouter, HTTPException, Query, Response, status
-from sqlmodel import Field, select
+from sqlmodel import Field, or_, select, col
 from app.core.database import SessionDep, commit_and_refresh
 
 from app.models.posts import Post, PostCreate, PostPublicWithUser, PostUpdate
@@ -17,8 +17,15 @@ def get_posts_paginated(
     session: SessionDep,
     offset: int = 0,
     limit: Annotated[int, Query(le=100)] = 100,
+    s: Annotated[str | None, Query(title="Search")] = None,
 ) -> list[Post]:
-    posts = session.exec(select(Post).offset(offset).limit(limit)).all()
+    query = select(Post).offset(offset).limit(limit)
+    if s:
+        search_title_or_content = or_(
+            col(Post.title).contains(s), col(Post.content).contains(s)
+        )
+        query = select(Post).where(search_title_or_content).offset(offset).limit(limit)
+    posts = session.exec(query).all()
     return posts
 
 

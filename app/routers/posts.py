@@ -5,14 +5,14 @@ from fastapi import Depends, APIRouter, HTTPException, Query, Response, status
 from sqlmodel import Field, select
 from app.core.database import SessionDep, commit_and_refresh
 
-from app.models.posts import Post, PostCreate, PostUpdate
+from app.models.posts import Post, PostCreate, PostPublicWithUser, PostUpdate
 from app.core.security import CurrentUser
 
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
 
-@router.get("/", response_model=list[Post])
+@router.get("/", response_model=list[PostPublicWithUser])
 def get_posts_paginated(
     session: SessionDep,
     offset: int = 0,
@@ -22,7 +22,7 @@ def get_posts_paginated(
     return posts
 
 
-@router.get("/{id}", response_model=Post)
+@router.get("/{id}", response_model=PostPublicWithUser)
 def get_post(id: int, session: SessionDep) -> Post:
     post = session.get(Post, id)
     if not post:

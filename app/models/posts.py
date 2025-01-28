@@ -2,7 +2,7 @@ from sqlmodel import Relationship, SQLModel, Field
 from pydantic import EmailStr
 
 from .models import BaseModel
-from .users import User
+from .users import User, UserPublic
 
 
 class Post(BaseModel, table=True):
@@ -26,3 +26,11 @@ class PostUpdate(SQLModel):
     title: str | None = None
     content: str | None = None
     published: bool | None = None
+
+
+class PostPublic(PostUpdate):
+    id: int
+
+
+class PostPublicWithUser(PostPublic):
+    author: UserPublic | None = None

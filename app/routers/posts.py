@@ -17,12 +17,12 @@ def get_posts_paginated(
     session: SessionDep,
     offset: int = 0,
     limit: Annotated[int, Query(le=100)] = 100,
-    s: Annotated[str | None, Query(title="Search")] = None,
+    q: Annotated[str | None, Query(alias="search")] = None,
 ) -> list[Post]:
     query = select(Post).offset(offset).limit(limit)
-    if s:
+    if q:
         search_title_or_content = or_(
-            col(Post.title).contains(s), col(Post.content).contains(s)
+            col(Post.title).contains(q), col(Post.content).contains(q)
         )
         query = select(Post).where(search_title_or_content).offset(offset).limit(limit)
     posts = session.exec(query).all()

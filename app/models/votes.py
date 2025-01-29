@@ -20,3 +20,7 @@ class Vote(SQLModel, table=True):
 class VoteData(SQLModel):
     post_id: int
     vote_dir: VoteDirection
+
+
+class VoteResponse(SQLModel):
+    message: str

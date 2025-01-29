@@ -2,8 +2,7 @@ from datetime import datetime, UTC
 from sqlmodel import SQLModel, Field
 
 
-class BaseModel(SQLModel):
-    id: int | None = Field(default=None, primary_key=True)
+class CreateUpdateTime(SQLModel):
     created_at: datetime = Field(
         default_factory=lambda: datetime.now(UTC),
         nullable=False,

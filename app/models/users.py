@@ -2,12 +2,13 @@ from sqlmodel import Field, Relationship, SQLModel
 from pydantic import EmailStr
 
 
-from .models import BaseModel
+from .models import CreateUpdateTime
 
 
-class User(BaseModel, table=True):
+class User(CreateUpdateTime, table=True):
     __tablename__ = "users"
 
+    id: int | None = Field(default=None, primary_key=True)
     first_name: str | None = Field(default=None)
     last_name: str | None = Field(default=None)
     email: EmailStr = Field(unique=True)
@@ -29,7 +30,7 @@ class UserUpdate(SQLModel):
     last_name: str | None = None
 
 
-class UserPublic(BaseModel):
+class UserPublic(CreateUpdateTime):
     email: EmailStr
     first_name: str | None
     last_name: str | None

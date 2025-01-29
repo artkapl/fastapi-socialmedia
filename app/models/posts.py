@@ -1,13 +1,14 @@
 from sqlmodel import Relationship, SQLModel, Field
 from pydantic import EmailStr
 
-from .models import BaseModel
+from .models import CreateUpdateTime
 from .users import User, UserPublic
 
 
-class Post(BaseModel, table=True):
+class Post(CreateUpdateTime, table=True):
     __tablename__ = "posts"
 
+    id: int | None = Field(default=None, primary_key=True)
     title: str = Field(index=True, nullable=False)
     content: str
     published: bool = Field(default=True, nullable=False)

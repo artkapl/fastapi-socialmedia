@@ -8,6 +8,4 @@ class CreateUpdateTime(SQLModel):
         nullable=False,
         description="Created Time in UTC",
     )
-    updated_at: datetime | None = Field(
-        default=None, description="Time of Last Update in UTC"
-    )
+    updated_at: datetime | None = Field(default=None, description="Time of Last Update in UTC")

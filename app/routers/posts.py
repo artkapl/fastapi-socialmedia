@@ -22,14 +22,12 @@ def get_posts_paginated(
 ) -> list[Post]:
     query = select(Post).offset(offset).limit(limit)
     if q:
-        search_title_or_content = or_(
-            col(Post.title).contains(q), col(Post.content).contains(q)
-        )
+        search_title_or_content = or_(col(Post.title).contains(q), col(Post.content).contains(q))
         query = select(Post).where(search_title_or_content).offset(offset).limit(limit)
     posts = session.exec(query).all()
 
     # get votes
-    
+
     # todo: call get_votes_count with post_ids instead of single post to optimize SQL query
     #  avoid separate queries for each post, get all posts with all votes at once instead.
     #  post_ids = list(map(lambda x: x.id, posts)) --> [1, 2, 3, ...]
@@ -53,9 +51,7 @@ def get_post(id: int, session: SessionDep) -> Post:
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=Post)
-def create_post(
-    post: PostCreate, session: SessionDep, current_user: CurrentUser
-) -> Post:
+def create_post(post: PostCreate, session: SessionDep, current_user: CurrentUser) -> Post:
     # Convert PostCreate object to Post in DB
     author_dict = {"author_id": current_user.id}
     db_post = Post.model_validate(post, update=author_dict)
@@ -66,9 +62,7 @@ def create_post(
 
 
 @router.patch("/{id}", response_model=Post)
-def update_post(
-    id: int, post: PostUpdate, session: SessionDep, current_user: CurrentUser
-) -> Post:
+def update_post(id: int, post: PostUpdate, session: SessionDep, current_user: CurrentUser) -> Post:
     # get post by ID
     db_post = session.get(Post, id)
     if not db_post:
@@ -76,9 +70,7 @@ def update_post(
 
     # User can only edit their own posts (admin can do all)
     if not current_user.is_superuser and current_user != db_post.author:
-        raise HTTPException(
-            status_code=403, detail="You are not allowed to change someone else's post"
-        )
+        raise HTTPException(status_code=403, detail="You are not allowed to change someone else's post")
 
     # Update post with Update values
     updated_data = post.model_dump(exclude_unset=True)
@@ -100,9 +92,7 @@ def delete_post(id: int, session: SessionDep, current_user: CurrentUser) -> Resp
 
     # User can only delete their own posts (admin can do all)
     if not current_user.is_superuser and current_user != db_post.author:
-        raise HTTPException(
-            status_code=403, detail="You are not allowed to delete someone else's post"
-        )
+        raise HTTPException(status_code=403, detail="You are not allowed to delete someone else's post")
 
     session.delete(db_post)
     session.commit()
@@ -112,7 +102,9 @@ def delete_post(id: int, session: SessionDep, current_user: CurrentUser) -> Resp
 def get_votes_count(post, session: SessionDep) -> dict:
     upvotes = 0
     downvotes = 0
-    vote_query = select(Vote.vote_type, func.count(Vote.post_id)).where(Vote.post_id == post.id).group_by(Vote.vote_type)
+    vote_query = (
+        select(Vote.vote_type, func.count(Vote.post_id)).where(Vote.post_id == post.id).group_by(Vote.vote_type)
+    )
     vote_count = session.exec(vote_query).all()
 
     # get upvotes & downvotes

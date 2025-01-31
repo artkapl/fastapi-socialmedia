@@ -14,9 +14,7 @@ router = APIRouter(tags=["Authentication"])
 
 
 @router.post("/login")
-def login_user(
-    login_form: Annotated[OAuth2PasswordRequestForm, Depends()], session: SessionDep
-) -> Token:
+def login_user(login_form: Annotated[OAuth2PasswordRequestForm, Depends()], session: SessionDep) -> Token:
     user = session.exec(select(User).where(User.email == login_form.username)).first()
     if not user:
         raise HTTPException(

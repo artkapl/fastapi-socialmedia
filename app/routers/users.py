@@ -29,11 +29,7 @@ def get_user(id: int, session: SessionDep) -> User:
     return user
 
 
-@router.post(
-    "/",
-    status_code=status.HTTP_201_CREATED,
-    response_model=UserPublic
-)
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model=UserPublic)
 def create_user(user: UserCreate, session: SessionDep) -> User:
     # Hash Password
     password_crypt = {"password_crypt": get_password_hash(user.password)}
@@ -46,9 +42,7 @@ def create_user(user: UserCreate, session: SessionDep) -> User:
 
 
 @router.patch("/{id}", response_model=UserPublic)
-def update_user(
-    user: UserUpdate, id: int, session: SessionDep, current_user: CurrentUser
-) -> User:
+def update_user(user: UserUpdate, id: int, session: SessionDep, current_user: CurrentUser) -> User:
     db_user = session.get(User, id)
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found!")

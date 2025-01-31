@@ -13,9 +13,7 @@ router = APIRouter(prefix="/vote", tags=["Votes"])
 @router.post("/")
 def cast_vote(vote_data: VoteData, session: SessionDep, current_user: CurrentUser):
     # Get vote from DB if exists
-    query = select(Vote).where(
-        Vote.post_id == vote_data.post_id, Vote.user_id == current_user.id
-    )
+    query = select(Vote).where(Vote.post_id == vote_data.post_id, Vote.user_id == current_user.id)
     db_vote = session.exec(query).first()
     db_post = session.get(Post, vote_data.post_id)
     if not db_post:
@@ -39,9 +37,11 @@ def cast_vote(vote_data: VoteData, session: SessionDep, current_user: CurrentUse
     else:
         # Cannot vote on own post
         if current_user.id == db_post.author_id:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, 
-                                detail="Users cannot vote on their own post!")
-        
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Users cannot vote on their own post!",
+            )
+
         # Cannot vote twice
         if db_vote:
             # If user wants to change vote direction:

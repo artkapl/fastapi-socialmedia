@@ -17,13 +17,19 @@ def cast_vote(vote_data: VoteData, session: SessionDep, current_user: CurrentUse
         Vote.post_id == vote_data.post_id and Vote.user_id == current_user.id
     )
     db_vote = session.exec(query).first()
+    db_post = session.get(Post, vote_data.post_id)
+    if not db_post:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            detail=f"Post with id {vote_data.post_id} does not exist!",
+        )
 
     # Undo existing vote
     if vote_data.vote_dir == VoteDirection.NO_VOTE:
         if not db_vote:
             raise HTTPException(
                 status.HTTP_404_NOT_FOUND,
-                detail="Vote not found: User has not yet voted on this post!",
+                detail=f"Vote not found: User has not yet voted on post {db_post.id}!",
             )
         session.delete(db_vote)
         session.commit()
@@ -32,9 +38,9 @@ def cast_vote(vote_data: VoteData, session: SessionDep, current_user: CurrentUse
     # Upvote or downvote
     else:
         # Cannot vote on own post
-        db_post = session.get(Post, vote_data.post_id)
         if current_user.id == db_post.author_id:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Users cannot vote on their own post!")
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, 
+                                detail="Users cannot vote on their own post!")
         
         # Cannot vote twice
         if db_vote:
@@ -46,7 +52,7 @@ def cast_vote(vote_data: VoteData, session: SessionDep, current_user: CurrentUse
             # if same vote direction as before: error
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="User has already voted on this post!",
+                detail=f"User has already voted on post {db_post.id}!",
             )
         # Create a new vote
         new_vote = Vote(
@@ -57,4 +63,3 @@ def cast_vote(vote_data: VoteData, session: SessionDep, current_user: CurrentUse
         session.add(new_vote)
         commit_and_refresh(session, new_vote)
         return VoteResponse(message="Voted successfully!")
-

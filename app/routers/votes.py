@@ -14,7 +14,7 @@ router = APIRouter(prefix="/vote", tags=["Votes"])
 def cast_vote(vote_data: VoteData, session: SessionDep, current_user: CurrentUser):
     # Get vote from DB if exists
     query = select(Vote).where(
-        Vote.post_id == vote_data.post_id and Vote.user_id == current_user.id
+        Vote.post_id == vote_data.post_id, Vote.user_id == current_user.id
     )
     db_vote = session.exec(query).first()
     db_post = session.get(Post, vote_data.post_id)
@@ -49,6 +49,7 @@ def cast_vote(vote_data: VoteData, session: SessionDep, current_user: CurrentUse
                 db_vote.vote_type = vote_data.vote_dir
                 commit_and_refresh(session, db_vote)
                 return VoteResponse(message="Vote changed successfully!")
+
             # if same vote direction as before: error
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,

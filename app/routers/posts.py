@@ -27,16 +27,19 @@ def get_posts_paginated(
     posts = session.exec(query).all()
 
     # get votes
+    post_ids = [post.id for post in posts]
+    post_votes = get_votes_count(post_ids, session)
 
-    # todo: call get_votes_count with post_ids instead of single post to optimize SQL query
-    #  avoid separate queries for each post, get all posts with all votes at once instead.
-    #  post_ids = list(map(lambda x: x.id, posts)) --> [1, 2, 3, ...]
-    #  in get_votes_count: buidl sql query with `in_` and get dict of post_ids
-    #  with num upvotes & downvotes per post
-
+    # Update Post response with number of upvotes & downvotes
     for idx, post in enumerate(posts):
-        votes = get_votes_count(post, session)
-        posts[idx] = PostPublicWithUser.model_validate(post, update=votes)
+        post_vote_dict = {"num_upvotes": 0, "num_downvotes": 0}
+        if post_count := post_votes.get(post.id):
+            post_vote_dict = {
+                "num_upvotes": post_count.get("num_upvotes", 0),
+                "num_downvotes": post_count.get("num_downvotes", 0),
+            }
+        posts[idx] = PostPublicWithUser.model_validate(post, update=post_vote_dict)
+
     return posts
 
 
@@ -45,8 +48,14 @@ def get_post(id: int, session: SessionDep) -> Post:
     post = session.get(Post, id)
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
-    votes = get_votes_count(post, session)
-    post = PostPublicWithUser.model_validate(post, update=votes)
+    # Get votes for post
+    votes = get_votes_count([post.id], session)
+    # Update post response to include upvotes & downvotes
+    post_vote_dict = {
+        "num_upvotes": votes.get(post.id, {}).get("num_upvotes", 0),
+        "num_downvotes": votes.get(post.id, {}).get("num_downvotes", 0),
+    }
+    post = PostPublicWithUser.model_validate(post, update=post_vote_dict)
     return post
 
 
@@ -99,18 +108,24 @@ def delete_post(id: int, session: SessionDep, current_user: CurrentUser) -> Resp
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-def get_votes_count(post, session: SessionDep) -> dict:
-    upvotes = 0
-    downvotes = 0
+def get_votes_count(post_ids: list[int], session: SessionDep) -> dict:
+    votes_dict = {}
     vote_query = (
-        select(Vote.vote_type, func.count(Vote.post_id)).where(Vote.post_id == post.id).group_by(Vote.vote_type)
+        select(Vote.post_id, Vote.vote_type, func.count(Vote.post_id))
+        .where(Vote.post_id.in_(post_ids))
+        .group_by(Vote.post_id, Vote.vote_type)
+        .order_by(Vote.post_id)
     )
-    vote_count = session.exec(vote_query).all()
+    votes = session.exec(vote_query).all()
 
     # get upvotes & downvotes
-    for type in vote_count:
-        if type[0] == VoteDirection.UPVOTE:
-            upvotes = type[1]
+    for post in votes:
+        post_id = post[0]
+        vote_dir = "num_upvotes" if post[1].name == "UPVOTE" else "num_downvotes"
+        num_votes = post[2]
+
+        if votes_dict.get(post[0]):
+            votes_dict[post_id].update({vote_dir: num_votes})
         else:
-            downvotes = type[1]
-    return {"num_upvotes": upvotes, "num_downvotes": downvotes}
+            votes_dict[post_id] = {vote_dir: num_votes}
+    return votes_dict

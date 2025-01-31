@@ -2,11 +2,12 @@ from typing import Annotated
 from datetime import UTC, datetime
 
 from fastapi import Depends, APIRouter, HTTPException, Query, Response, status
-from sqlmodel import Field, or_, select, col
+from sqlmodel import Field, or_, select, col, func
 from app.core.database import SessionDep, commit_and_refresh
 
 from app.models.posts import Post, PostCreate, PostPublicWithUser, PostUpdate
 from app.core.security import CurrentUser
+from app.models.votes import Vote, VoteDirection
 
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
@@ -26,6 +27,11 @@ def get_posts_paginated(
         )
         query = select(Post).where(search_title_or_content).offset(offset).limit(limit)
     posts = session.exec(query).all()
+
+    # get votes
+    for idx, post in enumerate(posts):
+        votes = get_votes_count(post, session)
+        posts[idx] = PostPublicWithUser.model_validate(post, update=votes)
     return posts
 
 
@@ -34,6 +40,8 @@ def get_post(id: int, session: SessionDep) -> Post:
     post = session.get(Post, id)
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
+    votes = get_votes_count(post, session)
+    post = PostPublicWithUser.model_validate(post, update=votes)
     return post
 
 
@@ -92,3 +100,18 @@ def delete_post(id: int, session: SessionDep, current_user: CurrentUser) -> Resp
     session.delete(db_post)
     session.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+def get_votes_count(post, session: SessionDep) -> dict:
+    upvotes = 0
+    downvotes = 0
+    vote_query = select(Vote.vote_type, func.count(Vote.post_id)).where(Vote.post_id == post.id).group_by(Vote.vote_type)
+    vote_count = session.exec(vote_query).all()
+
+    # get upvotes & downvotes
+    for type in vote_count:
+        if type[0] == VoteDirection.UPVOTE:
+            upvotes = type[1]
+        else:
+            downvotes = type[1]
+    return {"num_upvotes": upvotes, "num_downvotes": downvotes}

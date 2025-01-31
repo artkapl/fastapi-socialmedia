@@ -29,6 +29,13 @@ def get_posts_paginated(
     posts = session.exec(query).all()
 
     # get votes
+    
+    # todo: call get_votes_count with post_ids instead of single post to optimize SQL query
+    #  avoid separate queries for each post, get all posts with all votes at once instead.
+    #  post_ids = list(map(lambda x: x.id, posts)) --> [1, 2, 3, ...]
+    #  in get_votes_count: buidl sql query with `in_` and get dict of post_ids
+    #  with num upvotes & downvotes per post
+
     for idx, post in enumerate(posts):
         votes = get_votes_count(post, session)
         posts[idx] = PostPublicWithUser.model_validate(post, update=votes)

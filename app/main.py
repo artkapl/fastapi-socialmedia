@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from typing import Annotated
 from fastapi import Depends, FastAPI
 from sqlmodel import SQLModel
@@ -8,19 +9,20 @@ import core.config as config
 from app.core.database import engine
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    create_db_and_tables()
+    yield
+
+
 settings = config.get_settings()
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
 
 app.include_router(api_router)
 
 
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
-
-
-@app.on_event("startup")
-def on_startup():
-    create_db_and_tables()
 
 
 @app.get("/")

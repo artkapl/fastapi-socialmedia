@@ -38,10 +38,17 @@ def cast_vote(vote_data: VoteData, session: SessionDep, current_user: CurrentUse
         
         # Cannot vote twice
         if db_vote:
+            # If user wants to change vote direction:
+            if db_vote.vote_type != vote_data.vote_dir:
+                db_vote.vote_type = vote_data.vote_dir
+                commit_and_refresh(session, db_vote)
+                return VoteResponse(message="Vote changed successfully!")
+            # if same vote direction as before: error
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail="User has already voted on this post!",
             )
+        # Create a new vote
         new_vote = Vote(
             post_id=vote_data.post_id,
             user_id=current_user.id,

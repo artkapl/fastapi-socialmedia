@@ -31,8 +31,8 @@ class PostUpdate(SQLModel):
 
 class PostPublic(PostUpdate):
     id: int
-    num_upvotes: int
-    num_downvotes: int
+    upvotes: int
+    downvotes: int
 
 
 class PostPublicWithUser(PostPublic):

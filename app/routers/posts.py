@@ -32,11 +32,11 @@ def get_posts_paginated(
 
     # Update Post response with number of upvotes & downvotes
     for idx, post in enumerate(posts):
-        post_vote_dict = {"num_upvotes": 0, "num_downvotes": 0}
+        post_vote_dict = {"upvotes": 0, "downvotes": 0}
         if post_count := post_votes.get(post.id):
             post_vote_dict = {
-                "num_upvotes": post_count.get("num_upvotes", 0),
-                "num_downvotes": post_count.get("num_downvotes", 0),
+                "upvotes": post_count.get("upvotes", 0),
+                "downvotes": post_count.get("downvotes", 0),
             }
         posts[idx] = PostPublicWithUser.model_validate(post, update=post_vote_dict)
 
@@ -52,8 +52,8 @@ def get_post(id: int, session: SessionDep) -> Post:
     votes = get_votes_count([post.id], session)
     # Update post response to include upvotes & downvotes
     post_vote_dict = {
-        "num_upvotes": votes.get(post.id, {}).get("num_upvotes", 0),
-        "num_downvotes": votes.get(post.id, {}).get("num_downvotes", 0),
+        "upvotes": votes.get(post.id, {}).get("upvotes", 0),
+        "downvotes": votes.get(post.id, {}).get("downvotes", 0),
     }
     post = PostPublicWithUser.model_validate(post, update=post_vote_dict)
     return post
@@ -121,7 +121,7 @@ def get_votes_count(post_ids: list[int], session: SessionDep) -> dict:
     # get upvotes & downvotes
     for post in votes:
         post_id = post[0]
-        vote_dir = "num_upvotes" if post[1].name == "UPVOTE" else "num_downvotes"
+        vote_dir = "upvotes" if post[1].name == "UPVOTE" else "downvotes"
         num_votes = post[2]
 
         if votes_dict.get(post[0]):

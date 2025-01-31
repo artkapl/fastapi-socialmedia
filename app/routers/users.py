@@ -32,8 +32,7 @@ def get_user(id: int, session: SessionDep) -> User:
 @router.post(
     "/",
     status_code=status.HTTP_201_CREATED,
-    response_model=User,
-    dependencies=[Depends(get_current_user)],
+    response_model=UserPublic
 )
 def create_user(user: UserCreate, session: SessionDep) -> User:
     # Hash Password

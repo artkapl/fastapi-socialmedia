@@ -34,4 +34,5 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    op.drop_constraint("post_author_id_fkey", "post")
     op.drop_column("post", "author_id")

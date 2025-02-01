@@ -25,7 +25,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("title", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
         sa.Column("content", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-        sa.Column("published", sa.Boolean(), default=True, nullable=False),
+        sa.Column("published", sa.Boolean(), server_default=sa.text('true'), nullable=False),
         sa.Column("created_at", sa.TIMESTAMP(), 
                   server_default=sa.text("(now() at time zone('utc'))"), 
                   nullable=False),

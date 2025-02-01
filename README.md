@@ -7,10 +7,10 @@ This app contains:
 - User login and authentication with JWT
 - State of the art password hashing with the Argon2id hashing function for secure password DB storage
 - A complete API documentation using Swagger
-- Voting on a user's posts
+- Voting on a user's posts (upvote or downvote)
+- Database migrations using Alembic
 
 Future features:
-- Database migrations using Alembic
 - Unit & integration tests
 - CI/CD with Github Actions
 - Deployment

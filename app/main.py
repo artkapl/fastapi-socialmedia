@@ -9,20 +9,10 @@ import core.config as config
 from app.core.database import engine
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    create_db_and_tables()
-    yield
-
-
 settings = config.get_settings()
-app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 
 app.include_router(api_router)
-
-
-def create_db_and_tables():
-    SQLModel.metadata.create_all(engine)
 
 
 @app.get("/")

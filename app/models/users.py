@@ -6,7 +6,7 @@ from .models import CreateUpdateTime
 
 
 class User(CreateUpdateTime, table=True):
-    __tablename__ = "users"
+    __tablename__ = "user"
 
     id: int | None = Field(default=None, primary_key=True)
     first_name: str | None = Field(default=None)

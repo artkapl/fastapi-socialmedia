@@ -6,14 +6,14 @@ from .users import User, UserPublic
 
 
 class Post(CreateUpdateTime, table=True):
-    __tablename__ = "posts"
+    __tablename__ = "post"
 
     id: int | None = Field(default=None, primary_key=True)
     title: str = Field(index=True, nullable=False)
     content: str
     published: bool = Field(default=True, nullable=False)
 
-    author_id: int = Field(foreign_key="users.id", ondelete="CASCADE")
+    author_id: int = Field(foreign_key="user.id", ondelete="CASCADE")
     author: User = Relationship(back_populates="posts")
 
 

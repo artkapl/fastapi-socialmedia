@@ -9,10 +9,10 @@ class VoteDirection(Enum):
 
 
 class Vote(SQLModel, table=True):
-    __tablename__ = "votes"
+    __tablename__ = "vote"
 
-    post_id: int = Field(foreign_key="posts.id", primary_key=True, ondelete="CASCADE")
-    user_id: int = Field(foreign_key="users.id", primary_key=True, ondelete="CASCADE")
+    post_id: int = Field(foreign_key="post.id", primary_key=True, ondelete="CASCADE")
+    user_id: int = Field(foreign_key="user.id", primary_key=True, ondelete="CASCADE")
 
     vote_type: VoteDirection = Field(default=VoteDirection.NO_VOTE)
 

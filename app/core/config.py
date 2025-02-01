@@ -1,4 +1,6 @@
 from functools import lru_cache
+from pydantic import PostgresDsn, computed_field
+from pydantic_core import MultiHostUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -14,6 +16,18 @@ class Settings(BaseSettings):
     DB_USER: str
     DB_PASSWORD: str
     PSQL_DIALECT: str = "postgresql+psycopg"  # +psycopg is necessary for newer psycopg support (vs. default==psycopg2)
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def SQLALCHEMY_DATABASE_URI(self) -> PostgresDsn:
+        return MultiHostUrl.build(
+            scheme=self.PSQL_DIALECT,
+            username=self.DB_USER,
+            password=self.DB_PASSWORD,
+            host=self.DB_HOST,
+            port=self.DB_PORT,
+            path=self.DB_NAME,
+        )
 
     API_PREFIX: str = "/api/v1"
 

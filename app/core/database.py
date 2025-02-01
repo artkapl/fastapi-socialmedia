@@ -6,9 +6,7 @@ from . import config
 
 settings = config.get_settings()
 
-postgres_url = f"{settings.PSQL_DIALECT}://{settings.DB_USER}:{settings.DB_PASSWORD}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}"
-
-engine = create_engine(postgres_url, echo=True)
+engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI), echo=True)
 
 
 def get_session():

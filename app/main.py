@@ -1,16 +1,25 @@
 from contextlib import asynccontextmanager
 from typing import Annotated
 from fastapi import Depends, FastAPI
-from sqlmodel import SQLModel
+from fastapi.middleware.cors import CORSMiddleware
+
 from app.routers.main_router import api_router
 from app.core.security import get_current_active_superuser
-
-import core.config as config
+import app.core.config as config
 from app.core.database import engine
 
 
 settings = config.get_settings()
 app = FastAPI()
+
+# CORS config - allow all (public API)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*'],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(api_router)
 

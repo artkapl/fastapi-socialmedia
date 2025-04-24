@@ -8,6 +8,7 @@ dependencies = [
     "alembic>=1.14.1",
     "argon2-cffi>=23.1.0",
     "fastapi[all]>=0.115.6",
+    "h11>=0.16.0",
     "psycopg>=3.2.4",
     "pyjwt>=2.10.1",
     "python-dotenv>=1.0.1",
